@@ -1,0 +1,32 @@
+<!doctype html><meta charset="utf-8"><title>Actual CI log excerpt</title><style>body{margin:24px;background:#fafafa;color:#171717;font:16px/1.7 monospace}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style><pre>CI LOG EXCERPT - actual GitHub Actions output, not a live-provider test
+Source: https://github.com/Torutesu/selectaiagents.com/actions/runs/40217870297/job/121242845194
+Commit: 05f66252b3f776650794550ac5a4fb4f5a34c8cd
+Retrieved 2026-10-25. All upstream and payment tests use fixtures.
+
+2026-10-25T17:44:31.5537072Z # tests 10
+2026-10-25T17:44:31.5537772Z # pass 10
+2026-10-25T17:44:45.2302001Z PASS email/password signup, persisted sessions and API key creation
+2026-10-25T17:44:46.5701346Z PASS account isolation, CSRF protection and rejection of fake keys
+2026-10-25T17:44:49.5027443Z PASS concurrent one-vote-per-user enforcement and authenticated comments
+2026-10-25T17:44:53.1009736Z PASS maker ownership and private upstream credential configuration
+2026-10-25T17:44:54.4697911Z PASS credit and schema checks happen before upstream execution
+2026-10-25T17:44:54.6130432Z PASS OpenAI SDK execution, metering, idempotent replay and conflict handling
+2026-10-25T17:44:56.3491317Z PASS simultaneous idempotent requests execute and charge exactly once
+2026-10-25T17:44:56.3823484Z PASS playground session uses the same billed execution path
+2026-10-25T17:44:57.9718227Z PASS real upstream failure fallback and measured health exclusion below 98%
+2026-10-25T17:44:59.5886028Z PASS side-effect failure stops fallback and releases reserved credits
+2026-10-25T17:45:02.7342209Z PASS timeouts, output schema validation and failure refunds
+2026-10-25T17:45:04.2572099Z PASS OpenAI upstream adapter and bounded automatic routing
+2026-10-25T17:45:06.0117960Z PASS multiple endpoints, structured auto routing and incompatible fallback rejection
+2026-10-25T17:45:07.4666244Z PASS upstream redirects are rejected without following a private destination
+2026-10-25T17:45:07.6137829Z PASS concurrent requests cannot overspend prepaid balance
+2026-10-25T17:45:09.1711833Z PASS official MCP client discovery, inspection and metered execution
+2026-10-25T17:45:10.3472441Z PASS signed Stripe webhook validation and exactly-once credit on duplicate delivery
+2026-10-25T17:45:10.7798255Z PASS rankings aggregate successful real calls and exclude seeded figures
+2026-10-25T17:45:10.9438504Z PASS expired cached responses cannot re-execute an old task
+2026-10-25T17:45:11.0015814Z PASS revoked keys immediately stop working
+2026-10-25T17:45:15.3920108Z PASS operator access, owner feedback, stale/concurrent decisions, resubmission and atomic audit history
+2026-10-25T17:45:31.6661078Z PASS server-rendered catalog, launch boards, maker profile, docs and account screens
+2026-10-25T17:45:31.6662424Z 22 integration checks passed. Fixture traffic and payments only; no external provider was charged.
+
+</pre>
