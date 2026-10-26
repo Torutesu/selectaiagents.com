@@ -4,6 +4,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { Onboarding } from "@/components/maker/Onboarding";
+import { localUpstreamEnabled } from "@/lib/endpoint-timeout";
 export const dynamic = "force-dynamic";
 export default async function DraftPage({
   params,
@@ -32,6 +33,7 @@ export default async function DraftPage({
         </p>
       </header>
       <Onboarding
+        allowLocalUpstream={localUpstreamEnabled()}
         initialId={draft.id}
         initialDetails={draft.details}
         initialEndpoint={draft.endpoint}

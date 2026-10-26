@@ -6,6 +6,7 @@ import {
 } from "./endpoint-config";
 import { buildAgent, type SubmissionInput } from "./submission";
 import { HttpError } from "./http";
+import { validateExecutionTimeout } from "./endpoint-timeout";
 
 export const draftSchema = z
   .object({
@@ -30,6 +31,7 @@ export function reviewedEndpoint(value: unknown): EndpointConfig {
   const config = endpointConfigSchema.parse(value);
   try {
     validateConfig(config);
+    validateExecutionTimeout(config);
   } catch {
     throw new HttpError(
       400,

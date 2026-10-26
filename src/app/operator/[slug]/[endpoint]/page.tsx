@@ -1,3 +1,4 @@
+import { isLoopbackEndpoint, localUpstreamEnabled } from "@/lib/endpoint-timeout";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
@@ -112,7 +113,9 @@ export default async function ReviewPage({
           </dd>
           <dt>Host allowlist</dt>
           <dd>
-            {allowed
+            {localUpstreamEnabled() && isLoopbackEndpoint(config.url)
+              ? `${host} is permitted by local development mode. Never expose this agent as a shared service.`
+              : allowed
               ? `${host} is listed. DNS and network policy are rechecked on approval.`
               : `${host} is not in ROUTER_ALLOWED_HOSTS. Configure it on the server before approving.`}
           </dd>

@@ -2,6 +2,7 @@ import { SubmitForm } from "./SubmitForm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { localUpstreamEnabled } from "@/lib/endpoint-timeout";
 
 export const metadata = { title: "Launch an agent" };
 
@@ -17,7 +18,7 @@ export default async function SubmitPage() {
           submit when you’re ready. Calls require operator approval.
         </p>
       </header>
-      <SubmitForm />
+      <SubmitForm allowLocalUpstream={localUpstreamEnabled()} />
     </div>
   );
 }

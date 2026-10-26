@@ -53,6 +53,12 @@ still require credentials and deployment validation.
 For that validation, follow the [real-agent staging runbook](docs/STAGING.md) and
 use `.env.staging.example` to prepare the isolated staging configuration.
 
+No provider API key yet? Follow the [local Codex agent guide](docs/LOCAL_CODEX.md)
+to use your saved ChatGPT sign-in with `npm run agent:codex`, submit and approve
+the agent in the browser, and verify local routing/accounting. Opted-in local
+development endpoints support tasks up to 120 seconds; public endpoints retain
+the 20-second limit. This does not replace staging verification.
+
 ## Layout
 
 ```

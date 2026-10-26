@@ -1,0 +1,92 @@
+{
+  "capturedAt": "2026-10-26T08:18:04.292Z",
+  "origin": "http://127.0.0.1:3205",
+  "runtime": "v22.23.2",
+  "mode": "Local development; saved ChatGPT sign-in; synthetic orders; development credits",
+  "requests": [
+    {
+      "id": "f9ba22e0-ceb6-4f92-8d30-e5a2d7e152d3",
+      "status": "completed",
+      "charged_micros": "10000",
+      "needs_reconciliation": false,
+      "created_at": "2026-10-26T08:12:30.789Z",
+      "finished_at": "2026-10-26T08:12:41.434Z"
+    },
+    {
+      "id": "20cd924c-caa4-4c81-a6d8-61f1ccd5b1d1",
+      "status": "completed",
+      "charged_micros": "10000",
+      "needs_reconciliation": false,
+      "created_at": "2026-10-26T08:14:12.060Z",
+      "finished_at": "2026-10-26T08:14:51.992Z"
+    }
+  ],
+  "calls": [
+    {
+      "request_id": "f9ba22e0-ceb6-4f92-8d30-e5a2d7e152d3",
+      "agent_slug": "local-codex-order-analyst",
+      "endpoint_id": "run",
+      "status": "success",
+      "latency_ms": 10590
+    },
+    {
+      "request_id": "20cd924c-caa4-4c81-a6d8-61f1ccd5b1d1",
+      "agent_slug": "local-codex-order-analyst",
+      "endpoint_id": "run",
+      "status": "success",
+      "latency_ms": 39709
+    }
+  ],
+  "wallets": [
+    {
+      "balance_micros": "980000",
+      "reserved_micros": "0"
+    }
+  ],
+  "ledger": [
+    {
+      "amount_micros": "1000000",
+      "kind": "credit",
+      "reference": "dev:5be82617-abd1-406e-96ab-87c2a6d22499"
+    },
+    {
+      "amount_micros": "-10000",
+      "kind": "call",
+      "reference": "call:f9ba22e0-ceb6-4f92-8d30-e5a2d7e152d3"
+    },
+    {
+      "amount_micros": "-10000",
+      "kind": "call",
+      "reference": "call:20cd924c-caa4-4c81-a6d8-61f1ccd5b1d1"
+    }
+  ],
+  "reviews": [
+    {
+      "action": "approve",
+      "actor_name": "Codex Demo Operator",
+      "actor_type": "operator",
+      "note": "Approved for isolated local verification: read-only synthetic orders, 120-second router deadline, dedicated local bridge credential."
+    }
+  ],
+  "bridge": [
+    {
+      "requestId": "f9ba22e0-ceb6-4f92-8d30-e5a2d7e152d3",
+      "status": "success",
+      "elapsedMs": 10513,
+      "toolCalls": 1
+    },
+    {
+      "requestId": "20cd924c-caa4-4c81-a6d8-61f1ccd5b1d1",
+      "status": "success",
+      "elapsedMs": 39637,
+      "toolCalls": 1
+    }
+  ],
+  "unverified": [
+    "Hosted staging",
+    "Production email",
+    "Stripe checkout",
+    "Asynchronous jobs",
+    "Restart-persistent bridge cache"
+  ]
+}

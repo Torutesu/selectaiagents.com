@@ -1,0 +1,146 @@
+
+> selectaiagents@0.1.0 test
+> tsx --test tests/*.test.ts
+
+TAP version 13
+# Subtest: bridge rejects unauthorized/browser/invalid requests before execution
+ok 1 - bridge rejects unauthorized/browser/invalid requests before execution
+  ---
+  duration_ms: 174.167917
+  type: 'test'
+  ...
+# Subtest: bridge deduplicates running and completed requests and rejects conflicting replays
+ok 2 - bridge deduplicates running and completed requests and rejects conflicting replays
+  ---
+  duration_ms: 46.795125
+  type: 'test'
+  ...
+# Subtest: bridge aborts deadline failures and caches them without reexecution
+ok 3 - bridge aborts deadline failures and caches them without reexecution
+  ---
+  duration_ms: 118.226917
+  type: 'test'
+  ...
+# Subtest: disconnect aborts a running local task
+ok 4 - disconnect aborts a running local task
+  ---
+  duration_ms: 21.467
+  type: 'test'
+  ...
+# Subtest: local timeouts need explicit development opt-in; production/public remain capped
+ok 5 - local timeouts need explicit development opt-in; production/public remain capped
+  ---
+  duration_ms: 3.324167
+  type: 'test'
+  ...
+# Subtest: forwarding really permits an opted-in local task longer than 20 seconds
+ok 6 - forwarding really permits an opted-in local task longer than 20 seconds
+  ---
+  duration_ms: 20628.339583
+  type: 'test'
+  ...
+# Subtest: Codex child inherits desktop routing settings but no application credentials
+ok 7 - Codex child inherits desktop routing settings but no application credentials
+  ---
+  duration_ms: 1.301209
+  type: 'test'
+  ...
+# Subtest: runner preserves split Unicode, rejects incomplete output, and terminates stalled children
+ok 8 - runner preserves split Unicode, rejects incomplete output, and terminates stalled children
+  ---
+  duration_ms: 1375.632833
+  type: 'test'
+  ...
+# Subtest: private, mapped, link-local and loopback addresses cannot be upstreams
+ok 9 - private, mapped, link-local and loopback addresses cannot be upstreams
+  ---
+  duration_ms: 1.952208
+  type: 'test'
+  ...
+# Subtest: unsafe upstream protocols, credentials and unapproved destinations are rejected
+ok 10 - unsafe upstream protocols, credentials and unapproved destinations are rejected
+  ---
+  duration_ms: 0.380875
+  type: 'test'
+  ...
+# Subtest: chat and structured requests reject unsupported or ambiguous input
+ok 11 - chat and structured requests reject unsupported or ambiguous input
+  ---
+  duration_ms: 3.32475
+  type: 'test'
+  ...
+# Subtest: chat contracts reject schema drift, and structured contracts validate both directions
+ok 12 - chat contracts reject schema drift, and structured contracts validate both directions
+  ---
+  duration_ms: 115.873417
+  type: 'test'
+  ...
+# Subtest: measured daily usage never falls back to synthetic seed totals
+ok 13 - measured daily usage never falls back to synthetic seed totals
+  ---
+  duration_ms: 6.756458
+  type: 'test'
+  ...
+# Subtest: listing rejects unusable maker ids and oversized prices
+ok 14 - listing rejects unusable maker ids and oversized prices
+  ---
+  duration_ms: 2.243666
+  type: 'test'
+  ...
+# Subtest: usage date advances at UTC midnight without a process restart
+ok 15 - usage date advances at UTC midnight without a process restart
+  ---
+  duration_ms: 1.267208
+  type: 'test'
+  ...
+# Subtest: schema IDs can be reused across reloads and independent configurations
+ok 16 - schema IDs can be reused across reloads and independent configurations
+  ---
+  duration_ms: 45.399125
+  type: 'test'
+  ...
+# Subtest: validator cache evicts old schemas instead of retaining every configuration
+ok 17 - validator cache evicts old schemas instead of retaining every configuration
+  ---
+  duration_ms: 713.239583
+  type: 'test'
+  ...
+# Subtest: health excludes degraded agents only after sufficient measured calls
+ok 18 - health excludes degraded agents only after sufficient measured calls
+  ---
+  duration_ms: 0.467875
+  type: 'test'
+  ...
+# Subtest: operator access defaults closed and requires an exact configured user ID
+ok 19 - operator access defaults closed and requires an exact configured user ID
+  ---
+  duration_ms: 0.483542
+  type: 'test'
+  ...
+# Subtest: review decisions require a version and maker feedback for negative decisions
+ok 20 - review decisions require a version and maker feedback for negative decisions
+  ---
+  duration_ms: 7.185458
+  type: 'test'
+  ...
+# Subtest: maker status distinguishes operator feedback from a pending review
+ok 21 - maker status distinguishes operator feedback from a pending review
+  ---
+  duration_ms: 0.46525
+  type: 'test'
+  ...
+# Subtest: prices preserve billable microdollars rather than rounding to cents
+ok 22 - prices preserve billable microdollars rather than rounding to cents
+  ---
+  duration_ms: 70.057208
+  type: 'test'
+  ...
+1..22
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 23184.235834

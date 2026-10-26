@@ -1,0 +1,42 @@
+
+> selectaiagents@0.1.0 test:integration
+> tsx --env-file=.env.local scripts/integration.ts
+
+PASS email/password signup, persisted sessions and API key creation
+PASS account isolation, CSRF protection and rejection of fake keys
+PASS concurrent one-vote-per-user enforcement and authenticated comments
+PASS maker ownership and private upstream credential configuration
+PASS credit and schema checks happen before upstream execution
+PASS OpenAI SDK execution, metering, idempotent replay and conflict handling
+PASS simultaneous idempotent requests execute and charge exactly once
+PASS playground session uses the same billed execution path
+PASS real upstream failure fallback without excluding a new agent after one failure
+PASS a newly approved agent recovers after its first failed call
+PASS idempotent migration conservatively preserves legacy interrupted requests
+PASS endpoint aliases execute once, settle failure, and replay without locked credits
+PASS pre-dispatch infrastructure failure refunds reservation and caches a non-executing failure
+PASS interrupt-log: uncertain execution is flagged, not retried, and reconciled exactly once
+PASS interrupt-settle: uncertain execution is flagged, not retried, and reconciled exactly once
+PASS side-effect failure stops fallback and releases reserved credits
+PASS timeouts, output schema validation and failure refunds
+PASS OpenAI upstream adapter and bounded automatic routing
+PASS multiple endpoints, structured auto routing and incompatible fallback rejection
+PASS upstream redirects are rejected without following a private destination
+PASS concurrent requests cannot overspend prepaid balance
+PASS official MCP client discovery, inspection and metered execution
+PASS signed Stripe webhook validation and exactly-once credit on duplicate delivery
+PASS rankings aggregate successful real calls and exclude seeded figures
+PASS expired cached responses cannot re-execute an old task
+PASS revoked keys immediately stop working
+PASS operator access, owner feedback, stale/concurrent decisions, resubmission and atomic audit history
+PASS edited endpoint prices, approval precedence, free pricing, filters and rendered price precision
+PASS onboarding: draft ownership, unauthenticated access and same-origin protection
+PASS onboarding: saved details and endpoint survive resume without entering discovery
+PASS onboarding: simultaneous submission and replay publish exactly one listing and endpoint
+PASS onboarding: incomplete details, missing endpoint and invalid contracts leave no published records
+PASS onboarding: endpoint insert failure rolls back the listing and allows a clean retry
+PASS onboarding: competing drafts with the same name conflict safely and remain editable
+PASS onboarding: endpoint edits revoke approval, clear credentials and remove routing eligibility
+PASS server-rendered catalog, launch boards, maker profile, docs and account screens
+
+36 integration checks passed. Fixture traffic and payments only; no external provider was charged.

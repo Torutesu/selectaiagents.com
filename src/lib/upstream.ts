@@ -2,6 +2,7 @@ import { lookup } from "node:dns/promises";
 import ipaddr from "ipaddr.js";
 import { Agent, fetch } from "undici";
 import type { EndpointConfig } from "./endpoint-config";
+import { validateExecutionTimeout } from "./endpoint-timeout";
 
 export function publicAddress(address: string): boolean {
   try {
@@ -50,6 +51,7 @@ export async function forward(
   input: unknown,
   requestId: string,
 ): Promise<unknown> {
+  validateExecutionTimeout(config);
   const { url, addresses } = await targetAddresses(config.url);
   const credential = config.credentialEnv
     ? process.env[config.credentialEnv]

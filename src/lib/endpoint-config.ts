@@ -1,5 +1,6 @@
 import Ajv, { type ValidateFunction } from "ajv";
 import { z } from "zod";
+import { isLoopbackEndpoint, LOCAL_TIMEOUT_MS, PUBLIC_TIMEOUT_MS } from "./endpoint-timeout";
 
 export const endpointConfigSchema = z
   .object({
@@ -12,7 +13,7 @@ export const endpointConfigSchema = z
     inputSchema: z.record(z.string(), z.unknown()),
     outputSchema: z.record(z.string(), z.unknown()),
     priceMicros: z.number().int().min(0).max(10_000_000),
-    timeoutMs: z.number().int().min(100).max(20_000).default(15000),
+    timeoutMs: z.number().int().min(100).max(LOCAL_TIMEOUT_MS).default(15000),
     sideEffects: z.boolean().default(true),
   })
   .strict();
@@ -75,6 +76,8 @@ export function canonical(value: unknown): string {
   return JSON.stringify(value) ?? "null";
 }
 export function validateConfig(config: EndpointConfig) {
+  if (config.timeoutMs > PUBLIC_TIMEOUT_MS && !isLoopbackEndpoint(config.url))
+    throw new Error("Public endpoints have a maximum response timeout of 20 seconds.");
   compileSchema(config.inputSchema);
   compileSchema(config.outputSchema);
   if (
