@@ -1,4 +1,5 @@
 "use client";
+import { isLoopbackEndpoint } from "@/lib/endpoint-timeout";
 import {
   CHAT_INPUT,
   CHAT_OUTPUT,
@@ -20,10 +21,12 @@ export function EndpointFields({
   text,
   onChange,
   lockId = false,
+  allowLocalUpstream = false,
 }: {
   text: string;
   onChange: (text: string) => void;
   lockId?: boolean;
+  allowLocalUpstream?: boolean;
 }) {
   let config: EndpointConfig | undefined;
   try {
@@ -38,8 +41,11 @@ export function EndpointFields({
       <div className="maker-notice">
         <strong>Your endpoint is where we send tasks.</strong>
         <p>
-          Use your agent’s HTTPS address. Your API key is attached separately by
-          an operator—never paste a secret into this form.
+          {allowLocalUpstream
+            ? "Use an HTTPS address, or a loopback HTTP address for local development. "
+            : "Use your agent’s HTTPS address. "}
+          Your API key is attached separately by an operator—never paste a
+          secret into this form.
         </p>
       </div>
       {config && (
@@ -158,7 +164,11 @@ export function EndpointFields({
                 type="number"
                 required
                 min={0.1}
-                max={20}
+                max={
+                  allowLocalUpstream && isLoopbackEndpoint(config.url)
+                    ? 120
+                    : 20
+                }
                 step={0.1}
                 value={
                   Number.isFinite(config.timeoutMs)
@@ -174,7 +184,11 @@ export function EndpointFields({
                   })
                 }
               />
-              <small>How long the router should wait, up to 20 seconds.</small>
+              <small>
+                {allowLocalUpstream && isLoopbackEndpoint(config.url)
+                  ? "Local development: up to 120 seconds. Set the agent’s own deadline slightly shorter."
+                  : "How long the router should wait, up to 20 seconds."}
+              </small>
             </label>
           </div>
           <label className="maker-field">

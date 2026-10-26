@@ -6,6 +6,7 @@ import { getAgent } from "@/lib/store";
 import { makerStatus } from "@/lib/maker-status";
 import { ListingEditor } from "@/components/maker/ListingEditor";
 import { EndpointEditor } from "./EndpointEditor";
+import { localUpstreamEnabled } from "@/lib/endpoint-timeout";
 export const dynamic = "force-dynamic";
 export default async function ManagePage({
   params,
@@ -60,7 +61,10 @@ export default async function ManagePage({
           tags: agent.tags.join(", "),
         }}
       />
-      <EndpointEditor slug={agent.slug} />
+      <EndpointEditor
+        slug={agent.slug}
+        allowLocalUpstream={localUpstreamEnabled()}
+      />
     </div>
   );
 }

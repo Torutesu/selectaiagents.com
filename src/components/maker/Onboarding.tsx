@@ -7,15 +7,18 @@ import { buildAgent } from "@/lib/submission";
 import { endpointConfigSchema, validateConfig } from "@/lib/endpoint-config";
 import { AgentDetails, emptyDetails, type Details } from "./AgentDetails";
 import { EndpointFields, newEndpoint } from "./EndpointFields";
+import { isLoopbackEndpoint } from "@/lib/endpoint-timeout";
 
 export function Onboarding({
   initialId,
   initialDetails,
   initialEndpoint,
+  allowLocalUpstream = false,
 }: {
   initialId?: string;
   initialDetails?: Partial<Details>;
   initialEndpoint?: unknown;
+  allowLocalUpstream?: boolean;
 }) {
   const router = useRouter();
   const [id, setId] = useState(initialId);
@@ -82,7 +85,8 @@ export function Onboarding({
     }
     const url = new URL(parsed.data.url);
     if (
-      url.protocol !== "https:" ||
+      (url.protocol !== "https:" &&
+        !(allowLocalUpstream && isLoopbackEndpoint(parsed.data.url))) ||
       url.username ||
       url.password ||
       url.search ||
@@ -212,6 +216,7 @@ export function Onboarding({
               )}
               {step === 1 && (
                 <EndpointFields
+                  allowLocalUpstream={allowLocalUpstream}
                   text={text}
                   onChange={(v) => {
                     setText(v);

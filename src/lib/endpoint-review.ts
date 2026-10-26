@@ -8,6 +8,7 @@ import {
 } from "./endpoint-config";
 import { targetAddresses } from "./upstream";
 import { isOperator } from "./operator-access";
+import { validateExecutionTimeout } from "./endpoint-timeout";
 
 import { reviewDecisionSchema, type ReviewDecision } from "./review-decision";
 export { reviewDecisionSchema } from "./review-decision";
@@ -56,6 +57,7 @@ export async function reviewEndpoint(
       try {
         config = endpointConfigSchema.parse(snapshot);
         validateConfig(config);
+        validateExecutionTimeout(config);
       } catch {
         throw new HttpError(
           400,

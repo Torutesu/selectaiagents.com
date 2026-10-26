@@ -19,7 +19,13 @@ type Entry = {
 };
 type Review = ReviewEvent & { endpoint_id: string };
 type Response = { endpoints: Entry[]; reviews: Review[] };
-export function EndpointEditor({ slug }: { slug: string }) {
+export function EndpointEditor({
+  slug,
+  allowLocalUpstream = false,
+}: {
+  slug: string;
+  allowLocalUpstream?: boolean;
+}) {
   const router = useRouter();
   const [entries, setEntries] = useState<Entry[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -146,6 +152,7 @@ export function EndpointEditor({ slug }: { slug: string }) {
           >
             <fieldset disabled={busy}>
               <EndpointFields
+                allowLocalUpstream={allowLocalUpstream}
                 text={text}
                 onChange={(v) => {
                   setText(v);
