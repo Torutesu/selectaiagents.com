@@ -84,9 +84,13 @@ src/app/               Pages and API routes (Next.js App Router)
 ```bash
 npm test                  # Pure validation and network-policy tests
 npm run test:integration  # Resets isolated selectaiagents_test DB; see operations guide
+npm run test:e2e          # Chromium maker → operator → Playground flow; see browser-test guide
 npm run lint
 npm run build
 ```
 
 New routes: `/account`, `/agents/[slug]/manage`, `/makers/[id]`, `/api/mcp`,
 `/api/billing/checkout`, `/api/billing/webhook`, and authenticated account/comment/endpoint APIs.
+
+See [browser end-to-end tests](docs/BROWSER_TESTS.md) for local setup, CI reports,
+screenshots, database isolation, and the boundary between fixture tests and live staging.
