@@ -40,3 +40,40 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm audit --audit-level=high
+  browser-flow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      E2E_DATABASE_ADMIN_URL: postgresql://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Upload browser report, screenshots and failure traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-flow-evidence
+          retention-days: 7
+          path: |
+            playwright-report/
+            test-results/
+            .data/e2e/server.log
