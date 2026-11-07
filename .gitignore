@@ -9,3 +9,7 @@ next-env.d.ts
 .env*.local
 .env
 .DS_Store
+
+.next-e2e/
+playwright-report/
+test-results/

@@ -1,0 +1,37 @@
+{
+  "fixture": "Deterministic local HTTPS agent; no AI provider or payment processor",
+  "wallet": {
+    "balanceUsd": 0.99,
+    "reservedUsd": 0,
+    "availableUsd": 0.99
+  },
+  "requests": [
+    {
+      "id": "9b847ca6-dc6c-42ed-9771-5e7f2e44db31",
+      "status": "completed",
+      "charged_micros": "10000",
+      "reserved_micros": "10000",
+      "needs_reconciliation": false
+    },
+    {
+      "id": "5843a801-09d1-44ff-81b7-938bad737760",
+      "status": "failed",
+      "charged_micros": "0",
+      "reserved_micros": "10000",
+      "needs_reconciliation": false
+    }
+  ],
+  "upstream": [
+    {
+      "key": "9b847ca6-dc6c-42ed-9771-5e7f2e44db31",
+      "content": "Browser flow success",
+      "status": 200
+    },
+    {
+      "key": "5843a801-09d1-44ff-81b7-938bad737760",
+      "content": "FAIL_FIXTURE",
+      "status": 503
+    }
+  ],
+  "replay": "Identical response, one upstream call and one debit after replay and conflicting-payload rejection"
+}
