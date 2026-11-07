@@ -75,9 +75,11 @@ export async function reserve(
         throw new HttpError(
           409,
           existing.needs_reconciliation
-          ? "Request needs operator reconciliation; do not repeat the action"
-          : "Request is already running; retry this key later",
-          existing.needs_reconciliation ? "needs_reconciliation" : "in_progress",
+            ? "Request needs operator reconciliation; do not repeat the action"
+            : "Request is already running; retry this key later",
+          existing.needs_reconciliation
+            ? "needs_reconciliation"
+            : "in_progress",
         );
       if (
         !existing.response ||
@@ -155,16 +157,27 @@ export async function settle(
 /** Never silently refund an action whose dispatch may have reached the maker. */
 export async function interruptRequest(id: string) {
   const { rows } = await db.query(
-    "SELECT upstream_started FROM requests WHERE id=$1 AND status='running'", [id],
+    "SELECT upstream_started FROM requests WHERE id=$1 AND status='running'",
+    [id],
   );
   if (!rows.length) return;
   if (rows[0].upstream_started) {
     await db.query(
-      "UPDATE requests SET needs_reconciliation=true WHERE id=$1 AND status='running'", [id],
+      "UPDATE requests SET needs_reconciliation=true WHERE id=$1 AND status='running'",
+      [id],
     );
   } else {
-    await settle(id, 0, {
-      error: { code: "interrupted_before_dispatch", message: "Request interrupted before dispatch; no credits were charged" },
-    }, 503);
+    await settle(
+      id,
+      0,
+      {
+        error: {
+          code: "interrupted_before_dispatch",
+          message:
+            "Request interrupted before dispatch; no credits were charged",
+        },
+      },
+      503,
+    );
   }
 }

@@ -129,7 +129,9 @@ Aggregations currently run against indexed call logs. Add rollups/pagination and
 
 ```
 npm test
+npm run typecheck
 npm run lint
+npm run format:check
 npm run test:integration
 npm run build
 npm audit

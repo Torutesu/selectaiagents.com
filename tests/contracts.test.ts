@@ -151,7 +151,8 @@ test("schema IDs can be reused across reloads and independent configurations", (
 test("validator cache evicts old schemas instead of retaining every configuration", () => {
   const schema = { type: "string", const: "eviction-target" };
   const first = compileSchema(schema);
-  for (let i = 0; i < 130; i++) compileSchema({ type: "string", const: `value-${i}` });
+  for (let i = 0; i < 130; i++)
+    compileSchema({ type: "string", const: `value-${i}` });
   const reloaded = compileSchema(schema);
   assert.notEqual(reloaded, first);
   assert.equal(reloaded("eviction-target"), true);

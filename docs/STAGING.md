@@ -7,14 +7,14 @@ ready for review.
 
 ## Inputs needed
 
-| Input | Purpose |
-| --- | --- |
-| Staging HTTPS URL, hosting project/team and deployment access | Deploy the branch with a stable auth origin and sufficient request duration. |
-| Dedicated staging PostgreSQL connection with verified TLS | Persist accounts, reviews, requests and credits without touching production data. |
-| Real agent HTTPS URL, authentication, adapter, contract and model if needed | Route to an actual agent rather than a local fixture. |
-| SMTP credentials and an allowed sender; access to test inboxes | Verify maker and operator accounts in production mode. |
-| Stripe test secret key and staging webhook signing secret | Exercise prepaid funding; unnecessary only for an already-funded staging wallet. |
-| Provider spending limit | Bound real upstream costs independently of Stripe test credits. |
+| Input                                                                       | Purpose                                                                           |
+| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Staging HTTPS URL, hosting project/team and deployment access               | Deploy the branch with a stable auth origin and sufficient request duration.      |
+| Dedicated staging PostgreSQL connection with verified TLS                   | Persist accounts, reviews, requests and credits without touching production data. |
+| Real agent HTTPS URL, authentication, adapter, contract and model if needed | Route to an actual agent rather than a local fixture.                             |
+| SMTP credentials and an allowed sender; access to test inboxes              | Verify maker and operator accounts in production mode.                            |
+| Stripe test secret key and staging webhook signing secret                   | Exercise prepaid funding; unnecessary only for an already-funded staging wallet.  |
+| Provider spending limit                                                     | Bound real upstream costs independently of Stripe test credits.                   |
 
 Put secrets in the hosting secret manager or an ignored `.env.staging.local` file
 created from `.env.staging.example`, with local file permissions restricted to the
@@ -50,6 +50,7 @@ conversations need a separately scoped adapter change before this run.
    The regular `npm run db:migrate` command loads `.env.local`; do not use it
    expecting it to select staging automatically. Never run `test:integration`
    against staging; it resets its isolated test database.
+
 4. Build/deploy this release using the hosting environment variables. Create
    separate maker and operator accounts through `/account` and verify both emails.
    Add only the verified operator's database user ID to `OPERATOR_USER_IDS` and
@@ -122,11 +123,11 @@ mockups, local test results and approval alone are not evidence of live routing.
 Never expose tokens, cookies, payment details or inbox verification links. Include
 an explicit unverified list for any steps that could not be completed.
 
-| Check | Current evidence |
-| --- | --- |
+| Check                                    | Current evidence                             |
+| ---------------------------------------- | -------------------------------------------- |
 | Staging deployment and verified accounts | Pending credentials and deployment selection |
-| Real agent submission and approval | Pending endpoint and provider credential |
-| Live response and matching charge | Not run |
-| Idempotent replay and key revocation | Not run on staging |
-| Measured health and payment funding | Not run on staging |
-| Screenshots embedded in PR description | Pending actual staging run |
+| Real agent submission and approval       | Pending endpoint and provider credential     |
+| Live response and matching charge        | Not run                                      |
+| Idempotent replay and key revocation     | Not run on staging                           |
+| Measured health and payment funding      | Not run on staging                           |
+| Screenshots embedded in PR description   | Pending actual staging run                   |

@@ -24,7 +24,9 @@ npm ci
 npm run db:migrate
 npm run dev -- --hostname 127.0.0.1 --port 3100
 npm run build
-npm run lint    # typecheck
+npm run typecheck
+npm run lint          # ESLint
+npm run format:check  # Prettier
 ```
 
 ## API
@@ -85,7 +87,9 @@ src/app/               Pages and API routes (Next.js App Router)
 npm test                  # Pure validation and network-policy tests
 npm run test:integration  # Resets isolated selectaiagents_test DB; see operations guide
 npm run test:e2e          # Chromium maker → operator → Playground flow; see browser-test guide
+npm run typecheck
 npm run lint
+npm run format:check
 npm run build
 ```
 
