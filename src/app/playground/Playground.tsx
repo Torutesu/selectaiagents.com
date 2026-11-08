@@ -32,10 +32,16 @@ export function Playground({
 }) {
   const { data: session } = authClient.useSession();
   const [maxPrice, setMaxPrice] = useState("0.10");
+  const requested = initialModel
+    ? options.find(
+        (o) => o.id === initialModel || o.id.split("#")[0] === initialModel,
+      )
+    : undefined;
+  // A linked agent that cannot be called must not silently become "auto":
+  // that would send a paid task to a different agent. Require a choice.
+  const unavailable = Boolean(initialModel) && !requested;
   const [model, setModel] = useState(
-    options.find(
-      (o) => o.id === initialModel || o.id.split("#")[0] === initialModel,
-    )?.id ?? "auto",
+    requested?.id ?? (unavailable ? "" : "auto"),
   );
   const [fallbacks, setFallbacks] = useState<string[]>([]);
   const [sort, setSort] = useState("usage");
@@ -121,6 +127,11 @@ export function Playground({
             onChange={(e) => setModel(e.target.value)}
             className={input}
           >
+            {model === "" && (
+              <option value="" disabled>
+                Choose an agent
+              </option>
+            )}
             <option value="auto">Auto router</option>
             {options.map((o) => (
               <option key={o.id} value={o.id}>
@@ -129,6 +140,16 @@ export function Playground({
             ))}
           </select>
         </label>
+        {unavailable && model === "" && (
+          <p
+            role="alert"
+            className="rounded-md border border-line bg-bg px-3 py-2 text-sm"
+          >
+            <code className="break-all">{initialModel}</code> can&apos;t be
+            called from the Playground yet. It has no approved chat endpoint.
+            Choose an agent or the auto router.
+          </p>
+        )}
         {model === "auto" ? (
           <>
             <label className="block space-y-1">
@@ -274,6 +295,7 @@ export function Playground({
           <button
             disabled={
               pending ||
+              !model ||
               !session ||
               !options.length ||
               !text.trim() ||
