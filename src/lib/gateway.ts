@@ -7,8 +7,14 @@ import {
   type EndpointConfig,
 } from "./endpoint-config";
 import { HttpError, limit } from "./http";
-import { agentId, autoCandidates, healthyForRouting, resolve } from "./router";
-import { listAgents } from "./store";
+import {
+  agentId,
+  autoCandidates,
+  healthyForRouting,
+  referenceSlug,
+  resolve,
+} from "./router";
+import { agentsBySlug, routableAgents } from "./store";
 import { forward } from "./upstream";
 import type { RunBody, ChatBody } from "./request-schema";
 export { runSchema, chatSchema } from "./request-schema";
@@ -62,12 +68,20 @@ export async function execute(
   const model = chat?.model ?? run!.endpoint;
   const fallbacks = chat?.models ?? run?.fallbacks ?? [];
   const input = chat ? { messages: chat.messages } : run!.input;
-  const agents = await listAgents(false);
   let contract = chat ? "chat.v1" : body.route?.contract;
   if (model === "auto" && !contract)
     throw new HttpError(400, "Structured auto routing requires route.contract");
+  // Load only the agents this request can reach, not the whole catalog: the
+  // auto-routing pool for the contract, or the agents an explicit chain names.
+  const agents =
+    model === "auto" && contract
+      ? await routableAgents(contract)
+      : await agentsBySlug([model, ...fallbacks].map(referenceSlug));
   const configs = (
-    await db.query("SELECT agent_slug,id,config,approved FROM endpoints")
+    await db.query(
+      "SELECT agent_slug,id,config,approved FROM endpoints WHERE agent_slug = ANY($1::text[])",
+      [agents.map((a) => a.slug)],
+    )
   ).rows;
   const configMap = new Map(
     configs.map((row) => [`${row.agent_slug}#${row.id}`, row]),
