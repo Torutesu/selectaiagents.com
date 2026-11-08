@@ -4,7 +4,8 @@ import type { Agent } from "@/lib/types";
 import { AgentLogo } from "./AgentLogo";
 
 export function Change({ pct }: { pct: number | null }) {
-  if (pct === null) return <span className="text-xs font-medium text-accent">New</span>;
+  if (pct === null)
+    return <span className="text-xs font-medium text-accent">New</span>;
   const up = pct >= 0;
   return (
     <span className={`text-xs font-medium ${up ? "text-up" : "text-down"}`}>
@@ -27,8 +28,13 @@ export function RankRow({
 }) {
   return (
     <li>
-      <Link href={`/agents/${agent.slug}`} className="flex items-center gap-3 px-3 py-3 hover:bg-bg">
-        <span className="w-6 text-right text-sm tabular-nums text-muted">{rank}</span>
+      <Link
+        href={`/agents/${agent.slug}`}
+        className="flex items-center gap-3 px-3 py-3 hover:bg-bg"
+      >
+        <span className="w-6 text-right text-sm tabular-nums text-muted">
+          {rank}
+        </span>
         <AgentLogo name={agent.name} color={agent.color} size={32} />
         <div className="min-w-0 flex-1">
           <div className="font-medium">{agent.name}</div>

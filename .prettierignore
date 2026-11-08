@@ -1,0 +1,11 @@
+package-lock.json
+.next/
+.next-dev/
+.next-integration/
+.data/
+out/
+playwright-report/
+test-results/
+next-env.d.ts
+# Captured verification evidence; keep byte-for-byte as recorded.
+docs/screenshots/

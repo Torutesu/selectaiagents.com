@@ -59,7 +59,11 @@ export function compileSchema(schema: Record<string, unknown>) {
     validators.set(key, cached);
     return cached;
   }
-  const validate = new Ajv({ strict: true, allErrors: false, validateFormats: false }).compile(schema);
+  const validate = new Ajv({
+    strict: true,
+    allErrors: false,
+    validateFormats: false,
+  }).compile(schema);
   if (validators.size >= MAX_VALIDATORS)
     validators.delete(validators.keys().next().value!);
   validators.set(key, validate);

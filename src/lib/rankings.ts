@@ -16,12 +16,20 @@ function windowCalls(agent: Agent, period: Period) {
 }
 
 /** Most used agents in the trailing window, like OpenRouter's model rankings. */
-export function mostUsed(agents: Agent[], period: Period, category?: CategoryId): RankedAgent[] {
+export function mostUsed(
+  agents: Agent[],
+  period: Period,
+  category?: CategoryId,
+): RankedAgent[] {
   return agents
     .filter((a) => !category || a.category === category)
     .map((agent) => {
       const { calls, prev } = windowCalls(agent, period);
-      return { agent, calls, changePct: prev > 0 ? ((calls - prev) / prev) * 100 : null };
+      return {
+        agent,
+        calls,
+        changePct: prev > 0 ? ((calls - prev) / prev) * 100 : null,
+      };
     })
     .sort((a, b) => b.calls - a.calls);
 }
@@ -34,7 +42,10 @@ export interface GrowingAgent {
 }
 
 /** Week-over-week growth. Agents below `minCalls` are excluded to cut noise. */
-export function fastestGrowing(agents: Agent[], minCalls = 10_000): GrowingAgent[] {
+export function fastestGrowing(
+  agents: Agent[],
+  minCalls = 10_000,
+): GrowingAgent[] {
   return agents
     .filter((a) => a.stats.calls7d >= minCalls && a.stats.callsPrev7d > 0)
     .map((agent) => ({
@@ -47,14 +58,19 @@ export function fastestGrowing(agents: Agent[], minCalls = 10_000): GrowingAgent
 }
 
 /** Product Hunt-style launches, grouped by launch day, newest day first. */
-export function launchesByDay(agents: Agent[]): { day: string; agents: Agent[] }[] {
+export function launchesByDay(
+  agents: Agent[],
+): { day: string; agents: Agent[] }[] {
   const byDay = new Map<string, Agent[]>();
   for (const a of agents) {
     byDay.set(a.launchedAt, [...(byDay.get(a.launchedAt) ?? []), a]);
   }
   return [...byDay.entries()]
     .sort(([a], [b]) => b.localeCompare(a))
-    .map(([day, list]) => ({ day, agents: list.sort((x, y) => y.upvotes - x.upvotes) }));
+    .map(([day, list]) => ({
+      day,
+      agents: list.sort((x, y) => y.upvotes - x.upvotes),
+    }));
 }
 
 export const CATALOG_SORTS = [
@@ -77,7 +93,8 @@ export interface CatalogFilter {
   sort?: CatalogSort;
 }
 
-const growth = (a: Agent) => (a.stats.callsPrev7d > 0 ? a.stats.calls7d / a.stats.callsPrev7d : 0);
+const growth = (a: Agent) =>
+  a.stats.callsPrev7d > 0 ? a.stats.calls7d / a.stats.callsPrev7d : 0;
 
 /** The models-page style catalog: search, facet filters, and sort. */
 export function filterAgents(agents: Agent[], f: CatalogFilter): Agent[] {
@@ -90,17 +107,34 @@ export function filterAgents(agents: Agent[], f: CatalogFilter): Agent[] {
     latency: (a, b) => a.stats.p50Ms - b.stats.p50Ms,
   };
   return searchAgents(agents, f.q, f.category)
-    .filter((a) => !f.pricing || (f.pricing === "paid" ? a.pricing.model !== "free" : a.pricing.model === f.pricing))
-    .filter((a) => f.maxPrice === undefined || Number.isNaN(f.maxPrice) || a.pricing.priceUsd <= f.maxPrice)
+    .filter(
+      (a) =>
+        !f.pricing ||
+        (f.pricing === "paid"
+          ? a.pricing.model !== "free"
+          : a.pricing.model === f.pricing),
+    )
+    .filter(
+      (a) =>
+        f.maxPrice === undefined ||
+        Number.isNaN(f.maxPrice) ||
+        a.pricing.priceUsd <= f.maxPrice,
+    )
     .sort(sorters[f.sort && f.sort in sorters ? f.sort : "popular"]);
 }
 
-export function searchAgents(agents: Agent[], q?: string, category?: string): Agent[] {
+export function searchAgents(
+  agents: Agent[],
+  q?: string,
+  category?: string,
+): Agent[] {
   const needle = q?.trim().toLowerCase();
   return agents.filter(
     (a) =>
       (!category || a.category === category) &&
       (!needle ||
-        [a.name, a.tagline, a.description, a.maker, ...a.tags].some((s) => s.toLowerCase().includes(needle))),
+        [a.name, a.tagline, a.description, a.maker, ...a.tags].some((s) =>
+          s.toLowerCase().includes(needle),
+        )),
   );
 }

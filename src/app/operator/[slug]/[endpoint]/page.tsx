@@ -167,39 +167,37 @@ export default async function ReviewPage({
           </p>
         ) : (
           <ol className="review-history">
-            {history
-              .slice(0, 20)
-              .map(
-                (
-                  event: ReviewEvent & {
-                    actor_id: string | null;
-                    config_snapshot: unknown;
-                  },
-                ) => (
-                  <li key={event.id}>
-                    <div className="review-event-heading">
-                      <strong>{actionLabels[event.action]}</strong>
-                      <time>{new Date(event.created_at).toISOString()}</time>
-                    </div>
-                    <p className="text-sm text-muted">
-                      {event.actor_name} ·{" "}
-                      {event.actor_type === "cli"
-                        ? "Server CLI"
-                        : `Operator account ${event.actor_id ?? "deleted"}`}{" "}
-                      · reviewed version {event.reviewed_version}
-                    </p>
-                    <p className="review-note">
-                      {event.note || "No note added."}
-                    </p>
-                    <details className="maker-advanced">
-                      <summary>Configuration at review time</summary>
-                      <pre className="operator-snapshot">
-                        {JSON.stringify(event.config_snapshot, null, 2)}
-                      </pre>
-                    </details>
-                  </li>
-                ),
-              )}
+            {history.slice(0, 20).map(
+              (
+                event: ReviewEvent & {
+                  actor_id: string | null;
+                  config_snapshot: unknown;
+                },
+              ) => (
+                <li key={event.id}>
+                  <div className="review-event-heading">
+                    <strong>{actionLabels[event.action]}</strong>
+                    <time>{new Date(event.created_at).toISOString()}</time>
+                  </div>
+                  <p className="text-sm text-muted">
+                    {event.actor_name} ·{" "}
+                    {event.actor_type === "cli"
+                      ? "Server CLI"
+                      : `Operator account ${event.actor_id ?? "deleted"}`}{" "}
+                    · reviewed version {event.reviewed_version}
+                  </p>
+                  <p className="review-note">
+                    {event.note || "No note added."}
+                  </p>
+                  <details className="maker-advanced">
+                    <summary>Configuration at review time</summary>
+                    <pre className="operator-snapshot">
+                      {JSON.stringify(event.config_snapshot, null, 2)}
+                    </pre>
+                  </details>
+                </li>
+              ),
+            )}
           </ol>
         )}
         <div className="operator-pagination">

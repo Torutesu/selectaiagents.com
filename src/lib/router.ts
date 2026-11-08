@@ -33,7 +33,10 @@ export interface RouteRequest {
 export const MIN_UPTIME = 98;
 export const MIN_HEALTH_SAMPLES = 20;
 export function healthyForRouting(agent: Agent) {
-  return (agent.healthSamples ?? 0) < MIN_HEALTH_SAMPLES || agent.stats.uptime >= MIN_UPTIME;
+  return (
+    (agent.healthSamples ?? 0) < MIN_HEALTH_SAMPLES ||
+    agent.stats.uptime >= MIN_UPTIME
+  );
 }
 
 export function resolve(
