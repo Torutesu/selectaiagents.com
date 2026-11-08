@@ -1,4 +1,4 @@
-import { agentId } from "./router";
+import { agentId, healthyForRouting } from "./router";
 import type { Agent } from "./types";
 
 export function agentSummary(a: Agent) {
@@ -6,8 +6,10 @@ export function agentSummary(a: Agent) {
     id: agentId(a),
     name: a.name,
     demo: Boolean(a.demo),
+    // Same health rule as automatic routing and fallbacks: uptime only
+    // excludes an agent once it has enough measured calls.
     runnable:
-      !a.demo && a.stats.uptime >= 98 && a.endpoints.some((e) => e.available),
+      !a.demo && healthyForRouting(a) && a.endpoints.some((e) => e.available),
     description: a.tagline,
     category: a.category,
     created: a.launchedAt,

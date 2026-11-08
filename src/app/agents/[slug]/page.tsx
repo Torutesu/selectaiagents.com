@@ -16,6 +16,7 @@ import {
   usd,
 } from "@/lib/format";
 import { agentId } from "@/lib/router";
+import { playgroundEndpoints } from "@/lib/playground";
 import { getAgent, listAgents } from "@/lib/store";
 import { dailyUsage, usageDays } from "@/lib/usage";
 import { Comments } from "@/components/Comments";
@@ -109,12 +110,14 @@ export default async function AgentPage({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <Link
-            href={`/playground?model=${encodeURIComponent(id)}`}
-            className="rounded-md bg-ink px-3 py-2 text-sm font-medium text-bg"
-          >
-            Try in Playground
-          </Link>
+          {playgroundEndpoints(agent).length > 0 && (
+            <Link
+              href={`/playground?model=${encodeURIComponent(id)}`}
+              className="rounded-md bg-ink px-3 py-2 text-sm font-medium text-bg"
+            >
+              Try in Playground
+            </Link>
+          )}
           <UpvoteButton
             slug={agent.slug}
             initial={agent.upvotes}
