@@ -4,19 +4,34 @@ import type { Agent, Endpoint } from "./types";
 
 const showDemo = () => process.env.SHOW_DEMO_AGENTS === "true";
 
+interface Scope {
+  /** Only these agent slugs. */
+  slugs?: string[];
+  /** Only agents with an approved endpoint for this contract. */
+  routableContract?: string;
+}
+
 /**
- * Listings with measured stats, votes and endpoints: every agent when $2 is
- * null, otherwise only agent $2. Every figure is computed per agent, so the
- * single-agent row equals that agent's row in the full catalog.
- * UTC calendar windows match the published rankings methodology.
+ * Listings with measured stats, votes and endpoints, for the whole catalog or
+ * a narrower scope. Every figure is computed per agent, so a scoped row equals
+ * that agent's row in the full catalog; the scope only limits which agents'
+ * call logs are aggregated. UTC calendar windows match the published rankings
+ * methodology.
  */
 async function queryAgents(
   includeDemo: boolean,
-  slug: string | null,
+  scope: Scope = {},
 ): Promise<Agent[]> {
   const { rows } = await db.query(
     `WITH boundaries AS (
     SELECT date_trunc('day',now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC' AS day
+  ), scope AS (
+    SELECT a.slug FROM agents a
+    WHERE ($1 OR NOT a.demo)
+      AND ($2::text[] IS NULL OR a.slug = ANY($2::text[]))
+      AND ($3::text IS NULL OR EXISTS (
+        SELECT 1 FROM endpoints e
+        WHERE e.agent_slug=a.slug AND e.approved AND e.config->>'contract'=$3::text))
   ), logs AS (
     SELECT agent_slug,
       count(*) FILTER(WHERE status='success' AND created_at >= day-interval '168 hours' AND created_at < day)::int AS c7,
@@ -28,21 +43,22 @@ async function queryAgents(
       count(*) FILTER(WHERE created_at>now()-interval '720 hours')::int AS samples,
       100.0*count(*) FILTER(WHERE status='success' AND created_at>now()-interval '720 hours') / NULLIF(count(*) FILTER(WHERE created_at>now()-interval '720 hours'),0) AS uptime
     FROM call_logs CROSS JOIN boundaries WHERE created_at >= day-interval '1440 hours'
-      AND ($2::text IS NULL OR agent_slug=$2) GROUP BY agent_slug
+      AND agent_slug IN (SELECT slug FROM scope) GROUP BY agent_slug
   ), daily AS (
     SELECT agent_slug,jsonb_object_agg(day,calls) AS calls FROM (
       SELECT agent_slug,to_char(created_at AT TIME ZONE 'UTC','YYYY-MM-DD') AS day,count(*)::int AS calls
       FROM call_logs WHERE status='success' AND created_at>now()-interval '744 hours'
-        AND ($2::text IS NULL OR agent_slug=$2) GROUP BY agent_slug,day
+        AND agent_slug IN (SELECT slug FROM scope) GROUP BY agent_slug,day
     ) d GROUP BY agent_slug
   ) SELECT a.*,l.*,d.calls AS daily_calls,
     (SELECT count(*)::int FROM votes v WHERE v.agent_slug=a.slug) AS votes,
     (SELECT jsonb_agg(jsonb_build_object('id',e.id,'contract',e.config->'contract','available',e.approved,'reviewStatus',e.review_status,
       'method','POST','path','/v1/run','description',e.config->'description','priceUsd',(e.config->>'priceMicros')::numeric/1000000,
       'inputSchema',e.config->'inputSchema','outputSchema',e.config->'outputSchema') ORDER BY e.id) FROM endpoints e WHERE e.agent_slug=a.slug) AS configured_endpoints
-    FROM agents a LEFT JOIN logs l ON l.agent_slug=a.slug LEFT JOIN daily d ON d.agent_slug=a.slug
-    WHERE ($1 OR NOT a.demo) AND ($2::text IS NULL OR a.slug=$2) ORDER BY a.created_at DESC`,
-    [includeDemo, slug],
+    FROM agents a JOIN scope s ON s.slug=a.slug
+    LEFT JOIN logs l ON l.agent_slug=a.slug LEFT JOIN daily d ON d.agent_slug=a.slug
+    ORDER BY a.created_at DESC`,
+    [includeDemo, scope.slugs ?? null, scope.routableContract ?? null],
   );
   return rows.map((row) => {
     const agent = row.data as Agent;
@@ -89,12 +105,10 @@ async function queryAgents(
 // an agent page's generateMetadata and body or its three badge leaderboards.
 // Outside a render (route handlers, scripts) it calls straight through, so no
 // data is shared between requests. Callers must not mutate returned agents.
-const cachedAgents = cache((includeDemo: boolean) =>
-  queryAgents(includeDemo, null),
-);
+const cachedAgents = cache((includeDemo: boolean) => queryAgents(includeDemo));
 const cachedAgent = cache(
   async (slug: string, includeDemo: boolean) =>
-    (await queryAgents(includeDemo, slug))[0],
+    (await queryAgents(includeDemo, { slugs: [slug] }))[0],
 );
 
 export function listAgents(includeDemo = showDemo()): Promise<Agent[]> {
@@ -102,6 +116,19 @@ export function listAgents(includeDemo = showDemo()): Promise<Agent[]> {
 }
 export function getAgent(slug: string): Promise<Agent | undefined> {
   return cachedAgent(slug, showDemo());
+}
+
+/** Real (non-demo) agents among `slugs`, e.g. an explicit routing chain. */
+export function agentsBySlug(slugs: string[]): Promise<Agent[]> {
+  return queryAgents(false, { slugs: [...new Set(slugs)] });
+}
+
+/**
+ * The automatic-routing pool: real agents with at least one approved endpoint
+ * for `contract`. Health filtering still happens in the router.
+ */
+export function routableAgents(contract: string): Promise<Agent[]> {
+  return queryAgents(false, { routableContract: contract });
 }
 export async function addAgent(agent: Agent, ownerId: string) {
   await db.query("INSERT INTO agents(slug,owner_id,data) VALUES($1,$2,$3)", [

@@ -39,12 +39,18 @@ export function healthyForRouting(agent: Agent) {
   );
 }
 
+/** The agent slug a reference points at: `maker/slug#endpoint`, `maker/slug` or `slug`. */
+export function referenceSlug(ref: string): string {
+  const id = ref.split("#")[0];
+  return id.includes("/") ? id.split("/")[1] : id;
+}
+
 export function resolve(
   agents: Agent[],
   ref: string,
 ): { agent: Agent; endpoint: Endpoint } | undefined {
   const [id, endpointId] = ref.split("#");
-  const slug = id.includes("/") ? id.split("/")[1] : id;
+  const slug = referenceSlug(ref);
   const agent = agents.find(
     (a) => a.slug === slug && (!id.includes("/") || agentId(a) === id),
   );
