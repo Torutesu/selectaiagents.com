@@ -96,6 +96,19 @@ export interface CatalogFilter {
 const growth = (a: Agent) =>
   a.stats.callsPrev7d > 0 ? a.stats.calls7d / a.stats.callsPrev7d : 0;
 
+/** Measured p50, or undefined when no successful call has been timed yet. */
+const measuredP50 = (a: Agent) =>
+  a.healthSamples && a.stats.p50Ms > 0 ? a.stats.p50Ms : undefined;
+
+/** Fastest first; agents without a measured latency go last, not first. */
+function byLatency(a: Agent, b: Agent) {
+  const x = measuredP50(a);
+  const y = measuredP50(b);
+  if (x === undefined || y === undefined)
+    return (x === undefined ? 1 : 0) - (y === undefined ? 1 : 0);
+  return x - y;
+}
+
 /** The models-page style catalog: search, facet filters, and sort. */
 export function filterAgents(agents: Agent[], f: CatalogFilter): Agent[] {
   const sorters: Record<CatalogSort, (a: Agent, b: Agent) => number> = {
@@ -104,7 +117,7 @@ export function filterAgents(agents: Agent[], f: CatalogFilter): Agent[] {
     newest: (a, b) => b.launchedAt.localeCompare(a.launchedAt),
     "price-asc": (a, b) => a.pricing.priceUsd - b.pricing.priceUsd,
     "price-desc": (a, b) => b.pricing.priceUsd - a.pricing.priceUsd,
-    latency: (a, b) => a.stats.p50Ms - b.stats.p50Ms,
+    latency: byLatency,
   };
   return searchAgents(agents, f.q, f.category)
     .filter(
