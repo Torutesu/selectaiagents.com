@@ -41,10 +41,13 @@ export interface GrowingAgent {
   multiple: number;
 }
 
+/** Minimum 7-day calls before week-over-week growth is ranked. */
+export const GROWTH_MIN_CALLS = 100;
+
 /** Week-over-week growth. Agents below `minCalls` are excluded to cut noise. */
 export function fastestGrowing(
   agents: Agent[],
-  minCalls = 10_000,
+  minCalls = GROWTH_MIN_CALLS,
 ): GrowingAgent[] {
   return agents
     .filter((a) => a.stats.calls7d >= minCalls && a.stats.callsPrev7d > 0)
