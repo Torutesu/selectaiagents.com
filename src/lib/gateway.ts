@@ -123,10 +123,13 @@ export async function execute(
       attempts.push({ model: reference, status: "not_found" });
       continue;
     }
-    if (chat && !reference.includes("#")) {
-      const endpoint = hit.agent.endpoints.find(
-        (e) => e.available && e.contract === "chat.v1",
-      );
+    // A bare agent reference means "this agent", not its alphabetically first
+    // endpoint: prefer an approved endpoint for the contract, then any approved one.
+    if (!reference.includes("#")) {
+      const approved = hit.agent.endpoints.filter((e) => e.available);
+      const endpoint =
+        approved.find((e) => contract && e.contract === contract) ??
+        approved[0];
       if (endpoint) hit = { agent: hit.agent, endpoint };
     }
     const row = configMap.get(`${hit.agent.slug}#${hit.endpoint.id}`);

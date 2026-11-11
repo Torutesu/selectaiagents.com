@@ -2,7 +2,12 @@ import { Pills } from "@/components/Pills";
 import { Change, RankRow, callsLabel } from "@/components/RankRow";
 import { UsageChart } from "@/components/UsageChart";
 import { compact, dayLabel } from "@/lib/format";
-import { fastestGrowing, mostUsed, type Period } from "@/lib/rankings";
+import {
+  fastestGrowing,
+  GROWTH_MIN_CALLS,
+  mostUsed,
+  type Period,
+} from "@/lib/rankings";
 import { listAgents } from "@/lib/store";
 import { stackedUsage, usageDays, usageAsOf } from "@/lib/usage";
 import { CATEGORIES, type CategoryId } from "@/lib/types";
@@ -118,7 +123,8 @@ export default async function RankingsPage({
         <h2 className="text-xl font-semibold">Fastest growing</h2>
         {!growing.length && (
           <p className="text-sm text-muted">
-            No agents meet the 10,000-call growth threshold yet.
+            No agents meet the {GROWTH_MIN_CALLS.toLocaleString("en-US")}-call
+            growth threshold yet.
           </p>
         )}
         <ol className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
@@ -156,7 +162,8 @@ export default async function RankingsPage({
           </li>
           <li>
             Fastest growing compares the last 7 days with the 7 before, for
-            agents with at least 10K calls.
+            agents with at least {GROWTH_MIN_CALLS.toLocaleString("en-US")}{" "}
+            calls in the last 7 days.
           </li>
           <li>
             Upvotes drive launch rankings; usage drives these rankings. The two
