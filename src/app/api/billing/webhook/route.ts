@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { credit } from "@/lib/billing";
+import { checkoutCredit } from "@/lib/checkout-event";
 import { handle, HttpError, textBody } from "@/lib/http";
 export async function POST(req: Request) {
   return handle(async () => {
@@ -19,19 +20,15 @@ export async function POST(req: Request) {
     }
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
-      const userId = session.metadata?.userId;
-      const amount = Number(session.metadata?.amountMicros);
-      if (
-        session.payment_status === "paid" &&
-        session.currency === "usd" &&
-        userId &&
-        session.client_reference_id === userId &&
-        Number.isSafeInteger(amount) &&
-        amount === (session.amount_total ?? 0) * 10000 &&
-        [10e6, 25e6, 50e6].includes(amount)
-      ) {
-        await credit(userId, amount, `stripe:${session.id}`);
-      } else throw new HttpError(400, "Payment metadata did not match");
+      const decision = checkoutCredit(session);
+      if (decision.action === "credit")
+        await credit(
+          decision.userId,
+          decision.amountMicros,
+          `stripe:${session.id}`,
+        );
+      else if (decision.action === "reject")
+        throw new HttpError(400, "Payment metadata did not match");
     }
     return Response.json({ received: true });
   });
