@@ -1,3 +1,4 @@
+import { healthyForRouting } from "./router";
 import type { Agent } from "./types";
 export type MakerStatus =
   "Draft" | "Awaiting approval" | "Live" | "Needs attention";
@@ -26,7 +27,8 @@ export function makerStatus(agent: Agent): {
         : "Endpoint saved. An operator must approve it before calls are enabled.",
       tone: attention.length ? "attention" : "pending",
     };
-  if ((agent.healthSamples ?? 0) > 0 && agent.stats.uptime < 98)
+  // Same rule as the router: low uptime only pauses routing after enough calls.
+  if (!healthyForRouting(agent))
     return {
       label: "Needs attention",
       hint: "Measured uptime is below 98%, so routing is paused. Contact the operator to review failures.",
