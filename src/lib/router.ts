@@ -90,3 +90,13 @@ export function autoCandidates(
   }
   return sortAgents(pool, req.sort).map(agentId);
 }
+
+/**
+ * Why no endpoint could be tried. A price cap is the one cause the caller can
+ * fix directly, so name it instead of the generic "no agent" message.
+ */
+export function noRouteMessage(attempts: { status: string }[]): string {
+  return attempts.some((a) => a.status === "over_budget")
+    ? "No agent could run within your maximum price per call; at least one matching agent costs more. Raise route.maxPriceUsd (the Playground's maximum price) or choose a cheaper agent."
+    : "No compatible, configured, healthy agent is available";
+}

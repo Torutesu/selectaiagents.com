@@ -11,6 +11,7 @@ import {
   agentId,
   autoCandidates,
   healthyForRouting,
+  noRouteMessage,
   referenceSlug,
   resolve,
 } from "./router";
@@ -176,7 +177,7 @@ export async function execute(
       status: attempts.some((a) => a.status === "invalid_input") ? 400 : 503,
       body: {
         error: {
-          message: "No compatible, configured, healthy agent is available",
+          message: noRouteMessage(attempts),
           code: "no_route",
         },
         routing: { attempts },
