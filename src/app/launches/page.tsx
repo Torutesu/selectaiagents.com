@@ -47,6 +47,7 @@ export default async function LaunchesPage({
               key={r.agent.slug}
               agent={{ ...r.agent, upvotes: r.votes }}
               rank={i + 1}
+              periodVotes
             />
           ))
         ) : (

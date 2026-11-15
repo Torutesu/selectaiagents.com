@@ -6,10 +6,16 @@ export function UpvoteButton({
   slug,
   initial,
   disabled = false,
+  periodCount = false,
 }: {
   slug: string;
   initial: number;
   disabled?: boolean;
+  /**
+   * `initial` counts votes in a leaderboard period. The vote API returns
+   * all-time totals, so keep the period count and only add the new vote.
+   */
+  periodCount?: boolean;
 }) {
   const { data: session } = authClient.useSession();
   const [count, setCount] = useState(initial);
@@ -22,10 +28,10 @@ export function UpvoteButton({
       api<{ voted: boolean; upvotes: number }>(`/api/agents/${slug}/upvote`)
         .then((r) => {
           setVoted(r.voted);
-          setCount(r.upvotes);
+          if (!periodCount) setCount(r.upvotes);
         })
         .catch(() => {});
-  }, [session?.user.id, slug, disabled]);
+  }, [session?.user.id, slug, disabled, periodCount]);
   async function vote(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
@@ -40,7 +46,8 @@ export function UpvoteButton({
         `/api/agents/${slug}/upvote`,
         "POST",
       );
-      setCount(r.upvotes);
+      // The button is disabled once voted, so this is a new vote.
+      setCount((c) => (periodCount ? c + 1 : r.upvotes));
       setVoted(true);
     } catch (error) {
       setError((error as Error).message);

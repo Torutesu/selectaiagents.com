@@ -83,7 +83,9 @@ export async function routingBlockerChecks({
     IF NEW.idempotency_key='interrupt-before' AND NEW.upstream_started AND NOT OLD.upstream_started THEN
       RAISE EXCEPTION 'test-only dispatch marker failure';
     END IF;
-    IF NEW.idempotency_key='interrupt-settle' AND NEW.status='completed' THEN
+    -- Break only the gateway's own settlement, not the operator's later
+    -- reconciliation of the flagged request.
+    IF NEW.idempotency_key='interrupt-settle' AND NEW.status='completed' AND NOT OLD.needs_reconciliation THEN
       RAISE EXCEPTION 'test-only settlement failure';
     END IF;
     RETURN NEW; END $$;
@@ -141,7 +143,8 @@ export async function routingBlockerChecks({
         "10000",
       ]);
       const resolved = await record(key);
-      assert.equal(resolved.status, "failed");
+      // A verified charge is a completed request, matching the ledger debit.
+      assert.equal(resolved.status, "completed");
       assert.equal(resolved.needs_reconciliation, false);
       assert.equal(Number(resolved.charged_micros), 10000);
       assert.equal(
@@ -149,7 +152,9 @@ export async function routingBlockerChecks({
         Number(initial.balance_micros) - 10000,
       );
       assert.equal((await wallet()).reserved_micros, initial.reserved_micros);
-      assert.equal((await call(key)).status, 502);
+      const replayed = await call(key);
+      assert.equal(replayed.status, 200);
+      assert.equal(replayed.json.reconciled, true);
       assert.equal(hits["/ok"], count + 1);
       const { settle } = await import("../src/lib/billing");
       await settle(pending.id, 10000, {}, 200);
