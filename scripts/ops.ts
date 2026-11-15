@@ -97,17 +97,26 @@ async function main() {
       charge > Number(request.reserved_micros)
     )
       throw new Error("Invalid settlement amount");
+    // A verified charge means the provider did the work: record the request
+    // as completed (not failed) so history and replays match the ledger debit.
     await settle(
       arg1,
       charge,
-      {
-        error: {
-          message:
-            "An operator reconciled this interrupted request. Do not automatically repeat external actions.",
-        },
-        usage: { costUsd: charge / 1e6 },
-      },
-      502,
+      charge > 0
+        ? {
+            reconciled: true,
+            message:
+              "An operator verified this interrupted request completed upstream and charged it. The original output is unavailable; do not automatically repeat external actions.",
+            usage: { costUsd: charge / 1e6 },
+          }
+        : {
+            error: {
+              message:
+                "An operator reconciled this interrupted request. Do not automatically repeat external actions.",
+            },
+            usage: { costUsd: 0 },
+          },
+      charge > 0 ? 200 : 502,
     );
     console.log("Request reconciled");
   } else if (command === "cleanup") {

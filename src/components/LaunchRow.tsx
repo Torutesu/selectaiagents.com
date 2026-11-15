@@ -4,7 +4,16 @@ import type { Agent } from "@/lib/types";
 import { AgentLogo } from "./AgentLogo";
 import { UpvoteButton } from "./UpvoteButton";
 
-export function LaunchRow({ agent, rank }: { agent: Agent; rank?: number }) {
+export function LaunchRow({
+  agent,
+  rank,
+  periodVotes = false,
+}: {
+  agent: Agent;
+  rank?: number;
+  /** `agent.upvotes` counts only this leaderboard period, not all time. */
+  periodVotes?: boolean;
+}) {
   return (
     <div className="launch-row">
       {rank !== undefined && (
@@ -26,6 +35,7 @@ export function LaunchRow({ agent, rank }: { agent: Agent; rank?: number }) {
         slug={agent.slug}
         initial={agent.upvotes}
         disabled={agent.demo}
+        periodCount={periodVotes}
       />
     </div>
   );
